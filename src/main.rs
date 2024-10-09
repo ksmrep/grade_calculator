@@ -23,9 +23,9 @@ fn main() {
         }
 
         let course_name = parts[0].to_string();
-        let credits: i8 = parts[1].parse().unwrap_or(0);
-        let grade = parts[2];
-        let gpa = match grade {
+        let credits: i32 = parts[1].parse().unwrap_or(0);
+        let grade = parts[2].to_string();
+        let gpa = match grade.as_str() {
             "A+" | "A0" => 4.0,
             "A-" => 3.7,
             "B+" => 3.3,
@@ -41,16 +41,19 @@ fn main() {
             _ => 0.0,
         };
         
-        courses.push((course_name, credits, gpa));
+        courses.push((course_name, credits, grade, gpa));
     }
+    let available_grades: Vec<String> = vec!["A+", "A0", "A-", "B+", "B0", "B-", "C+", "C0", "C-", "D+", "D0", "D-", "F"].into_iter().map(String::from).collect();
+    
+    let mut total_weighted_score: f32 = 0.0;
+    let mut total_credits: i32 = 0;
 
-    let mut total_weighted_score = 0.0;
-    let mut total_credits = 0;
-
-    for (course_name, credits, gpa) in &courses {
-        total_weighted_score += gpa* *credits as f32;
-        total_credits += credits;
+    for (course_name, credits, grade, gpa) in &courses {
         println!("Course: {}, Credits: {}, GPA: {}", course_name, credits, gpa);
+        if available_grades.contains(grade) {
+            total_weighted_score += gpa * (*credits as f32);
+            total_credits += *credits as i32;
+        }
     }
 
     if total_credits > 0 {
